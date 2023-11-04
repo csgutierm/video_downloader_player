@@ -1,14 +1,53 @@
+from flask import Flask, send_file, jsonify
 from pytube import YouTube
+from flask_cors import CORS
+from flask import request
+import os
+
+app = Flask(__name__)
+CORS(app)
+
+#video_path = 'C:/Users/csgut/Documents/Python/Youtube downloader/video/video.mp4'  # Ruta del video descargado
+video_path = None
+
+@app.route('/video')
+def video():
+    global video_path
+    if video_path:
+        return send_file(video_path, as_attachment=True)
+    else:
+        return "Error: Video not found"
+
+@app.route('/descargar_video')
+def descargar_video():
+    global video_path
+    print(request.args.get('link'))
+    link = request.args.get('link')
+    video_path = Download(link)
+
+    if video_path:
+        return jsonify({"success": True})
+    else:
+        return jsonify({"success": False})
 
 def Download(link):
     youtubeObject = YouTube(link)
-    youtubeObject = youtubeObject.streams.get_highest_resolution()
-    try:
-        youtubeObject.download()
-    except:
-        print("An error has occurred")
-    print("Download is completed successfully")
+    video_title = youtubeObject.title
+    video_path = f'C:/Users/csgut/Documents/Python/Youtube downloader/video/{video_title}.mp4'
 
+    # Comprueba si el archivo ya existe en la carpeta
+    if os.path.exists(video_path):
+        print(f"El video '{video_title}' ya existe.")
+        return video_path
+    else:
+        video_stream = youtubeObject.streams.get_highest_resolution()
+        try:
+            video_stream.download(output_path='C:/Users/csgut/Documents/Python/Youtube downloader/video/', filename=f"{video_title}.mp4")
+            print("Download is completed successfully")
+            return video_path
+        except:
+            print("An error has occurred")
+            return None
 
-link = input("Enter the YouTube video URL: ")
-Download(link)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000)
