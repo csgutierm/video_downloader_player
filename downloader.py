@@ -7,7 +7,10 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-#video_path = 'C:/Users/csgut/Documents/Python/Youtube downloader/video/video.mp4'  # Ruta del video descargado
+
+base_dir = os.path.abspath(os.path.dirname(__file__))
+video_directory = os.path.join(base_dir, 'videos')
+
 video_path = None
 
 @app.route('/video')
@@ -33,7 +36,7 @@ def descargar_video():
 def Download(link):
     youtubeObject = YouTube(link)
     video_title = youtubeObject.title
-    video_path = f'C:/Users/csgut/Documents/Python/Youtube downloader/video/{video_title}.mp4'
+    video_path = os.path.join(video_directory, f'{video_title}.mp4')
 
     # Comprueba si el archivo ya existe en la carpeta
     if os.path.exists(video_path):
@@ -42,7 +45,7 @@ def Download(link):
     else:
         video_stream = youtubeObject.streams.get_highest_resolution()
         try:
-            video_stream.download(output_path='C:/Users/csgut/Documents/Python/Youtube downloader/video/', filename=f"{video_title}.mp4")
+            video_stream.download(output_path=video_directory, filename=f"{video_title}.mp4")
             print("Download is completed successfully")
             return video_path
         except:
