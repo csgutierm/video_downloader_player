@@ -3,11 +3,43 @@
 <head>
     <title>Reproductor de Video</title>
 </head>
+
 <body>
     <h1>Reproductor de Video</h1>
-    <video width="640" height="360" controls>
-        <source src="http://192.168.0.5:5000/video" type="video/mp4">
+    <button onclick="descargarVideo('https://www.youtube.com/watch?v=__BFUf_nJl0')">Descargar Video BTOB</button>
+    <button onclick="descargarVideo('https://www.youtube.com/watch?v=DeuejYoRbps')">Descargar Video INFINITE</button>
+    <video id="reproductor-video" width="640" height="480" controls>
+        <source id="video-source" src="" type="video/mp4">
         Your browser does not support the video tag.
     </video>
 </body>
+
+<script>
+    function descargarVideo(link) {
+        fetch('http://192.168.0.5:5000/descargar_video?link=' + link)
+            .then(response => {
+                if (response.ok) {
+                    document.getElementById('video-source').setAttribute('src', 'http://192.168.0.5:5000/video');
+                    document.getElementById('reproductor-video').load();
+                    //comprobarDescarga();
+                } else {
+                    alert('Error al descargar el video.');
+                }
+            });
+    }
+
+    function comprobarDescarga() {
+        setTimeout(function() {
+            fetch('http://192.168.0.5:5000/video')
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('video-source').setAttribute('src', 'http://192.168.0.5:5000/video');
+                        document.getElementById('reproductor-video').load();
+                    } else {
+                        comprobarDescarga();
+                    }
+                });
+        }, 10); // Espera
+    }
+</script>
 </html>
