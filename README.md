@@ -9,3 +9,11 @@ Simple UI in **html + JavaScript**
   
 
 ![imagen](https://github.com/csgutierm/video_downloader_player/assets/90303345/83f59cef-3975-4a2f-a7d2-ab0b5653573b)
+
+HOW TO USE
+
+Start the Flask server using  
+python downloader.py  
+
+Open the index.html in your browser  
+Click in "Descargar ..." 
