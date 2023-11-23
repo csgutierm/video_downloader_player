@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Reproductor de Video</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+
+</head>
+
+<style>
+    video::cue {
+        background-image: linear-gradient(to bottom, rgb(46, 46, 46), rgb(118, 118, 118));
+        color: papayawhip;
+        text-align: center;
+        font-size: 1.5em;
+        padding: 0.1em;
+        border-radius: 0.1em;
+        margin: 10px;
+        position: absolute;
+        bottom: 40%;
+        left: 10%;
+    }
+
+    video::cue(b) {
+        color: peachpuff;
+    }
+
+    body {
+        background-color: rgb(119, 125, 109);
+        margin: 10px;
+    }
+
+</style>
+
+<body>
+
+    <div id="metadata-display" class="fw-bold"></div>
+    <div id="video-title" class="fw-bold">...</div>
+
+    <div class="container text-center">
+        <h1 class="text-decoration-underline text-uppercase">CSGM</h1>
+    </div>
+
+    <div class="container-fluid text-center">
+        <video id="reproductor-video"  width=100% style="max-width: 800px;" controls poster="videos/poster.jpg" autoplay>
+            
+            <source id="video-source" src="videos/I'll Be Your Man.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+            <track kind="subtitles" label="Español" srclang="es" src="videos/subs.vtt" default>
+        </video>
+    </div>
+    <div id="botones" class="d-flex justify-content-center">
+        <button type="button"
+            class="btn btn-primary border border-5 border-info m-3"
+            onclick="descargarVideo('https://www.youtube.com/watch?v=__BFUf_nJl0')">
+            Descargar Video BTOB
+        </button>
+        <button type="button"
+            class="btn btn-primary border border-5 border-info m-3"
+            onclick="descargarVideo('https://www.youtube.com/watch?v=DeuejYoRbps')">
+            Descargar Video INFINITE
+        </button>
+    </div>
+
+</body>
+
+<script>
+    function descargarVideo(link) {
+
+        fetch('http://192.168.0.2:5000/descargar_video?link=' + link)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('video-source').setAttribute('src', 'http://192.168.0.2:5000/video');
+                    document.getElementById('reproductor-video').load();
+                    document.getElementById('video-title').innerHTML = 'Título: ' + data.title;
+                } else {
+                    alert('Error al descargar el video.');
+                }
+            });
+    }
+
+    // Obtener el elemento de video por su ID
+    var videoElement = document.getElementById('reproductor-video');
+    var metadataDisplay = document.getElementById('metadata-display');
+
+    // Agregar el evento 'loadedmetadata' para asegurarse de que el video esté cargado
+    videoElement.addEventListener('loadedmetadata', function () {
+
+        var duracionFormateada = formatarDuracion(videoElement.duration);
+
+        metadataDisplay.innerHTML = 'Duración: ' + duracionFormateada;
+    });
+
+
+    // Función para formatear la duración en formato HH:MM:SS
+    function formatarDuracion(segundos) {
+        var horas = Math.floor(segundos / 3600);
+        var minutos = Math.floor((segundos % 3600) / 60);
+        var segundosRestantes = Math.floor(segundos % 60);
+
+        horas = horas < 10 ? '0' + horas : horas;
+        minutos = minutos < 10 ? '0' + minutos : minutos;
+        segundosRestantes = segundosRestantes < 10 ? '0' + segundosRestantes : segundosRestantes;
+
+        return horas + ':' + minutos + ':' + segundosRestantes;
+    }
+
+
+</script>
+
+</html>
