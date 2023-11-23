@@ -1,4 +1,4 @@
-from flask import Flask, send_file, jsonify
+from flask import Flask, send_file, jsonify, render_template
 from pytube import YouTube
 from flask_cors import CORS
 from flask import request
@@ -13,6 +13,11 @@ video_directory = os.path.join(base_dir, 'videos')
 
 video_path = None
 video_title = None
+
+@app.route('/')
+def index():
+    return render_template('indexCopy.html')  # Asegúrate de tener un archivo welcome.html en el directorio de tu aplicación
+
 
 @app.route('/video')
 def video():
@@ -30,18 +35,9 @@ def descargar_video():
     video_path, video_title = Download(link)
 
     if video_path:
-        return jsonify({"success": True})
+        return jsonify({"success": True, "title": video_title, "video_path": video_path, "link": link})
     else:
-        return jsonify({"success": False})
-
-@app.route('/titulo_video')
-def obtener_titulo_video():
-    global video_title
-    if video_title:
-        return jsonify({"success": True, "title": video_title})
-    else:
-        print("Error: No se encontró el título del video.")
-        return jsonify({"success": False})        
+        return jsonify({"success": False}) 
 
 def Download(link):
     global video_title, video_path
