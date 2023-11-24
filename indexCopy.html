@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 
 <head>
     <title>Reproductor de Video</title>
@@ -9,32 +9,38 @@
 
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
 
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
+
+    <style>
+        video::cue {
+            background-image: linear-gradient(to bottom, rgb(46, 46, 46), rgb(118, 118, 118));
+            color: papayawhip;
+            text-align: center;
+            font-size: 1.5em;
+            padding: 0.1em;
+            border-radius: 0.1em;
+            margin: 10px;
+            position: absolute;
+            bottom: 40%;
+            left: 10%;
+        }
+    
+        video::cue(b) {
+            color: peachpuff;
+        }
+    
+        body {
+            background-color: rgb(119, 125, 109);
+            margin: 10px;
+            visibility: visible;
+        }
+    
+    </style>
+
 </head>
 
-<style>
-    video::cue {
-        background-image: linear-gradient(to bottom, rgb(46, 46, 46), rgb(118, 118, 118));
-        color: papayawhip;
-        text-align: center;
-        font-size: 1.5em;
-        padding: 0.1em;
-        border-radius: 0.1em;
-        margin: 10px;
-        position: absolute;
-        bottom: 40%;
-        left: 10%;
-    }
 
-    video::cue(b) {
-        color: peachpuff;
-    }
-
-    body {
-        background-color: rgb(119, 125, 109);
-        margin: 10px;
-    }
-
-</style>
 
 <body>
 
@@ -50,8 +56,10 @@
             
             <source id="video-source" src="videos/I'll Be Your Man.mp4" type="video/mp4">
             Your browser does not support the video tag.
-            <track kind="subtitles" label="Español" srclang="es" src="videos/subs.vtt" default>
-        </video>
+            <track kind="subtitles" label="Original" srclang="kr" src="videos/subsALL.vtt" default>
+            <track kind="subtitles" label="English" srclang="en" src="videos/subsKR.vtt" >
+            <track kind="subtitles" label="Español" srclang="es" src="videos/subsES.vtt" >
+        </video>    
     </div>
     <div id="botones" class="d-flex justify-content-center">
         <button type="button"
@@ -68,14 +76,19 @@
 
 </body>
 
-<script>
+<script defer>
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.body.style.visibility = 'visible';
+});
+
     function descargarVideo(link) {
 
-        fetch('http://192.168.0.2:5000/descargar_video?link=' + link)
+        fetch('http://192.168.0.4:5000/descargar_video?link=' + link)
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    document.getElementById('video-source').setAttribute('src', 'http://192.168.0.2:5000/video');
+                    document.getElementById('video-source').setAttribute('src', 'http://192.168.0.4:5000/video');
                     document.getElementById('reproductor-video').load();
                     document.getElementById('video-title').innerHTML = 'Título: ' + data.title;
                 } else {
